@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat System</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="chat">
+            <div class="messages">
+            </div>
+            <form id="chat-form" onsubmit="sendMessage(event)">
+                <input id="message-input" type="text" name="message" placeholder="Type your message..." autocomplete="off" required>
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        console.log('Hello World!');
+        function sendMessage(event) {
+            console.log(event);
+            event.preventDefault(); // Prevent form submission
+
+            // Get the message input value
+            var message = document.getElementById('message-input').value;
+            // Create a JSON payload
+            var payload = JSON.stringify({ "message": message });
+            // Send an AJAX request to the chat endpoint
+            $.ajax({
+                url: '/chat',
+                type: 'POST',
+                contentType: 'application/json',
+                data: payload,
+                success: function(response) {
+                    // Display the response message
+                    console.log("printting",response);
+                    console.log("line 40",response);
+                    displayMessage(response);
+                }
+            });
+
+            // Clear the message input
+            document.getElementById('message-input').value = '';
+        }
+
+        function displayMessage(message) {
+            var messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+            messageElement.innerHTML = message;
+
+            var messagesContainer = document.querySelector('.messages');
+            messagesContainer.appendChild(messageElement);
+        }
+    </script>
+</body>
+</html>

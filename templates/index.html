@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat System</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat {
+            height: 400px;
+            overflow-y: scroll;
+            padding: 10px;
+            background-color: #f7f7f7;
+            border-radius: 8px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .message {
+            margin-bottom: 10px;
+        }
+
+        .user-message {
+            margin-left: 20px;
+            padding: 10px;
+            background-color: #dcf8c6;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .bot-message {
+            margin-right: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .input-container {
+            margin-top: 10px;
+            display: flex;
+        }
+
+        .input-container input {
+            flex-grow: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+        }
+
+        .input-container button {
+            margin-left: 10px;
+            padding: 8px 16px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="chat" id="chat-box">
+            <!-- Display chat messages here -->
+        </div>
+        <div class="input-container">
+            <input id="message-input" type="text" name="message" placeholder="Type your message..." autocomplete="off" required>
+            <button type="submit" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        function sendMessage() {
+            var messageInput = document.getElementById('message-input');
+            var message = messageInput.value.trim();
+
+            if (message !== '') {
+                displayUserMessage(message);
+
+                var payload = JSON.stringify({ "message": message });
+
+                $.ajax({
+                    url: '/chat',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: payload,
+                    success: function(response) {
+                        displayBotMessage(response.message);
+                    }
+                });
+
+                messageInput.value = '';
+            }
+        }
+
+        function displayUserMessage(message) {
+            var chatBox = document.getElementById('chat-box');
+
+            var userMessage = document.createElement('div');
+            userMessage.classList.add('message', 'user-message');
+            userMessage.innerHTML = message;
+
+            chatBox.appendChild(userMessage);
+
+            // Scroll to the bottom of the chat box
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function displayBotMessage(message) {
+            var chatBox = document.getElementById('chat-box');
+
+            var botMessage = document.createElement('div');
+            botMessage.classList.add('message', 'bot-message');
+            botMessage.innerHTML = message;
+
+            chatBox.appendChild(botMessage);
+
+            // Scroll to the bottom of the chat box
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+</html>
